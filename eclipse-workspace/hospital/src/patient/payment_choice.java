@@ -74,6 +74,7 @@ public class payment_choice extends JFrame implements ActionListener{
         if(e.getSource()==jb1){
             //跳转到微信支付
             this.dispose();
+            return;
         }
         else if(e.getSource()==jb2){
             //跳转到支付宝支付

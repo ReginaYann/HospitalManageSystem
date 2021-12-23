@@ -30,10 +30,7 @@ public class DeptTable extends AbstractTableModel{
     String password="A20001112a";
 
 
-    public void init(String sql){
-        if(sql.equals("")){//初始化表格
-            sql="select * from department";
-        }
+    public void init(String deptname){
         columnNames = new Vector();
         //设置列名
         columnNames.add("科室ID");
@@ -49,7 +46,14 @@ public class DeptTable extends AbstractTableModel{
             //2、得到连接(指定连接到哪个数据源)
             ct = DriverManager.getConnection(url,user,password);
             //3、创建ps
-            ps_dept=ct.prepareStatement(sql);
+            if(deptname.equals("")){
+                ps_dept=ct.prepareStatement("select * from department");
+            }
+            else{
+                ps_dept=ct.prepareStatement("select * from department where department_name=?");
+                ps_dept.setString(1,deptname);
+            }
+
             //4、执行(如果是增加，删除，修改使用executeUpdate();查询executeQuery)
             rs_dept = ps_dept.executeQuery();
 
@@ -57,7 +61,11 @@ public class DeptTable extends AbstractTableModel{
                 Vector col = new Vector();
                 col.add(rs_dept.getString(1));
                 col.add(rs_dept.getString(2));
-                ps_doctor=ct.prepareStatement("select * from doctor  where doctor_id=rs_dept.getInt(3)");
+
+                //找到科长
+                ps_doctor=ct.prepareStatement("select * from doctor  where doctor_id=?");
+                int dd=rs_dept.getInt(3);
+                ps_doctor.setInt(1,dd);
                 //预编译语句对象
                 rs_doctor=ps_doctor.executeQuery();//返回查询结果
                 //如果有查询结果
@@ -65,8 +73,11 @@ public class DeptTable extends AbstractTableModel{
                     col.add(rs_doctor.getString(4));
                 }
 
-                ps_doctor=ct.prepareStatement("select * from doctor  where department_id=rs_dept.getInt(1)");
+                //对医生数量计数
+                ps_doctor=ct.prepareStatement("select * from doctor  where department_id=?");
                 //预编译语句对象
+                int dede=rs_dept.getInt(1);
+                ps_doctor.setInt(1,dede);
                 rs_doctor=ps_doctor.executeQuery();//返回查询结果
                 //如果有查询结果
                 int cnt = 0;
@@ -94,8 +105,8 @@ public class DeptTable extends AbstractTableModel{
     }
 
     //通过传递的sql语句来获得数据模型
-    public DeptTable(String sql){
-        this.init(sql);
+    public DeptTable(String deptname_){
+        this.init(deptname_);
     }
     //做一个构造函数，用于初始化数据模型
     public DeptTable(){

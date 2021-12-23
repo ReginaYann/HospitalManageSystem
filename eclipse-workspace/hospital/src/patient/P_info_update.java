@@ -74,7 +74,8 @@ public class P_info_update extends JDialog implements ActionListener{
             //2、得到连接(指定连接到哪个数据源)
             ct = DriverManager.getConnection(url,user,password);
             //3、创建ps
-            ps=ct.prepareStatement("select * from patient /*where patient_id=pid*/");
+            ps=ct.prepareStatement("select * from patient where patient_id=?");
+            ps.setInt(1,pid);
             //预编译语句对象
             rs=ps.executeQuery();//返回查询结果
             //如果有查询结果
@@ -96,7 +97,7 @@ public class P_info_update extends JDialog implements ActionListener{
                 jtf7.setText(rs.getString(7));
                 //jtf7.setEditable(false);
                 jtf8.setText(rs.getString(8));
-                //jtf8.setEditable(false);
+                jtf8.setEditable(false);
                 jtf9.setText(rs.getString(9));
                 jtf9.setEditable(false);
             }
@@ -192,11 +193,6 @@ public class P_info_update extends JDialog implements ActionListener{
                 JOptionPane.showMessageDialog((Component)null,"电话不能为空","提示信息",JOptionPane.ERROR_MESSAGE);
                 jl2.requestFocus();
             }
-            else if(jtf8.getText().length()==0){
-                JOptionPane.showMessageDialog((Component)null,"登录名不能为空","提示信息",JOptionPane.ERROR_MESSAGE);
-                jl3.requestFocus();
-            }
-
             if(password_modify){
                 String s1=jtf10.getText();
                 String s2=jtf11.getText();
@@ -212,7 +208,7 @@ public class P_info_update extends JDialog implements ActionListener{
             }
 
             //做一个SQL
-            String sql="update patient set patient_tel=?,patient_mail=?,patient_user_name=?,patient_password=? /*where patient_id=pid*/";
+            String sql="update patient set patient_tel=?,patient_mail=?,patient_password=? where patient_id=?";
             try{
                 //1、加载驱动(把下需要的驱动程序加入内存中)
                 Class.forName(driver);
@@ -225,12 +221,12 @@ public class P_info_update extends JDialog implements ActionListener{
 
                 ps.setString(1, jtf6.getText());
                 ps.setString(2, jtf7.getText());
-                ps.setString(3, jtf8.getText());
                 if(!password_modify){
-                    ps.setString(4, jtf9.getText());}
+                    ps.setString(3, jtf9.getText());}
                 else if(password_modify){
-                    ps.setString(4, jtf11.getText());
+                    ps.setString(3, jtf11.getText());
                 }
+                ps.setInt(4,pid);
 
 
 

@@ -68,9 +68,8 @@ public class P_search_doctor extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==jb1) {
             String query = this.jtf.getText().trim();
-            String sql = "select * from doctor where doctor_name = '"+query+" order by doctor_id";
             DoctorTable new_table;
-            new_table = new DoctorTable(sql);
+            new_table = new DoctorTable(query);
             jt.setModel(new_table);
         }
     }

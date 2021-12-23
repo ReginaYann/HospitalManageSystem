@@ -39,7 +39,7 @@ public class P_checka extends JFrame implements ActionListener{
     public static int row_number;
 
 
-    public void init(String sql_) {
+    public P_checka(String pid_) {
         jp1=new JPanel();
         jb1=new JButton("查看对应病历");
         jb1.addActionListener(this);
@@ -48,7 +48,7 @@ public class P_checka extends JFrame implements ActionListener{
         jp1.add(jb1);
 
         //展示所有病历信息
-        RecordTable table_init = new RecordTable(sql);
+        AppointTable table_init = new AppointTable(pid_);
         jt = new JTable(table_init);
         jsp = new JScrollPane(jt);
 
@@ -60,17 +60,7 @@ public class P_checka extends JFrame implements ActionListener{
         this.setTitle("挂号记录");
         this.setVisible(true);
     }
-    public P_checka(String pid_) {
-        pid=pid_;
-        int patientID=Integer.parseInt(pid);
-        sql="select * from appointment where patient_id=patientID";
-        this.init(sql);
-    }
 
-    public P_checka() {
-        sql="select * from appointment";
-        this.init(sql);
-    }
 
 
 

@@ -28,7 +28,7 @@ import patient.AppointTable;
 public class P_history extends JFrame implements ActionListener{
     JPanel jp1, jp2;
     JLabel jl1;
-    JButton jb1;
+    JButton jb1,jb2;
     JTable jt;
     JScrollPane jsp;
     JTextField jtf;
@@ -39,15 +39,30 @@ public class P_history extends JFrame implements ActionListener{
     }
     public static int row_number;
 
-    public void init(String sql) {
+
+    //连接数据库要用的东西
+    Connection ct=null;
+    PreparedStatement ps= null;
+    ResultSet rs=null;
+    PreparedStatement ps1= null;
+    ResultSet rs1=null;
+    String driver="com.mysql.cj.jdbc.Driver";
+    String url="jdbc:mysql://localhost:3306/hospital";
+    String user="root";
+    String password="A20001112a";
+
+    public P_history(String pid_) {
         jp1=new JPanel();
         jb1=new JButton("查看对应病历");
         jb1.addActionListener(this);
+        jb2=new JButton("查看对应处方");
+        jb2.addActionListener(this);
 
         //查询窗口;
         jp1.add(jb1);
+        jp1.add(jb2);
         //展示所有预约信息
-        RecordTable table_init = new RecordTable(sql);
+        RecordTable table_init = new RecordTable(pid_);
         jt = new JTable(table_init);
         jsp = new JScrollPane(jt);
 
@@ -60,18 +75,7 @@ public class P_history extends JFrame implements ActionListener{
         this.setVisible(true);
     }
 
-
-    public P_history(String pid_){
-            pid=Integer.parseInt(pid_);
-            sql="select * from medical_record where patient_id=pid";
-            this.init(sql);
-    }
-
-    public P_history(){
-            sql="select * from medical_record";
-            this.init(sql);
-    }
-
+    
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==jb1) {
@@ -83,6 +87,44 @@ public class P_history extends JFrame implements ActionListener{
             else {
                 int recID = (int) this.jt.getValueAt(row_number, 0);
                 new RecordDetails(recID, "PATIENT");
+            }
+        }
+        if(e.getSource()==jb2) {
+            //查看对应处方
+            int row_number=this.jt.getSelectedRow();
+            if(row_number==-1){
+                JOptionPane.showMessageDialog((Component)null,"请选择病历记录","提示信息",JOptionPane.ERROR_MESSAGE);
+            }
+            else {
+                //病历id
+                int recID = (int) this.jt.getValueAt(row_number, 0);
+                int presID = 0;
+                try{
+                    //1、加载驱动(把下需要的驱动程序加入内存中)
+                    Class.forName(driver);
+                    //2、得到连接(指定连接到哪个数据源)
+                    ct = DriverManager.getConnection(url,user,password);
+                    //3、创建ps
+                    //默认-1，显示所有科室的医生
+                    ps=ct.prepareStatement("select * from prescription where record_id=?");
+                    ps.setInt(1,recID);
+                    //4、执行(如果是增加，删除，修改使用executeUpdate();查询executeQuery)
+                    rs=ps.executeQuery();
+
+                    while(rs.next()){
+                        presID=rs.getInt("prescription_id");
+                    }
+                }catch(Exception ee){
+                    ee.printStackTrace();
+                }finally{
+                    //关闭资源（关闭顺序：谁后创建则先关闭)
+                    try{
+                        if(rs!=null) rs1.close();
+                        if(ps!=null) ps1.close();
+                        if(ct!=null) ct.close();
+                    }catch(Exception ee){ }
+                }
+                new ShowPresDetails(presID, "PATIENT");  //显示病历对应的处方
             }
         }
     }

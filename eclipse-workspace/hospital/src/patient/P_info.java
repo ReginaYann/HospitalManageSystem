@@ -83,7 +83,8 @@ public class P_info extends JDialog implements ActionListener{
             ct = DriverManager.getConnection(url,user,password);
             System.out.println("获取数据库链接成功");
             //3、创建ps
-            ps=ct.prepareStatement("select * from patient /*where patient_id=pid*/");
+            ps=ct.prepareStatement("select * from patient where patient_id=?");
+            ps.setInt(1,pid);
             //预编译语句对象
             rs=ps.executeQuery();//返回查询结果
             //如果有查询结果
@@ -167,7 +168,7 @@ public class P_info extends JDialog implements ActionListener{
         this.setVisible(true);
     }
     public static void main(String[] args) {
-        new P_info("2");
+        new P_info("1");
     }
 
 

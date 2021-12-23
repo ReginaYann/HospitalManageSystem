@@ -34,11 +34,9 @@ public class RecordTable extends AbstractTableModel{
     String password="A20001112a";
     int flag=0;
 
-    public void init(String sql){
-        if(sql.equals("")){//初始化表格
+    //是否是查看未缴费记录,yes表示是，no表示否
+    public void init(String pid_, Boolean pay){
 
-            sql="select * from medical_record";
-        }
         columnNames = new Vector();
         //设置列名
         columnNames.add("病历编号");
@@ -56,7 +54,24 @@ public class RecordTable extends AbstractTableModel{
             //2、得到连接(指定连接到哪个数据源)
             ct = DriverManager.getConnection(url,user,password);
             //3、创建ps
-            ps=ct.prepareStatement(sql);
+            if(pid_.equals("")) {
+                if(pay) {   ps=ct.prepareStatement("select * from medical_record where is_paid=0");}
+                else {
+                    ps=ps=ct.prepareStatement("select * from medical_record");
+                }
+
+            }
+            else {
+                if(pay){
+                    ps=ct.prepareStatement("select * from medical_record where patient_id=? and is_paid=0");
+                    int pp=Integer.parseInt(pid_);
+                    ps.setInt(1,pp);}
+                if(pay){
+                    ps=ct.prepareStatement("select * from medical_record where patient_id=?");
+                    int pp=Integer.parseInt(pid_);
+                    ps.setInt(1,pp);}
+            }
+
             //4、执行(如果是增加，删除，修改使用executeUpdate();查询executeQuery)
             rs = ps.executeQuery();
 
@@ -65,13 +80,17 @@ public class RecordTable extends AbstractTableModel{
                 col.add(rs.getInt(1));
                 col.add(rs.getDate(8));
                 //科室名称
-                ps1=ct.prepareStatement("select * from department where department_id=rs.getInt(5)");
+                ps1=ct.prepareStatement("select * from department where department_id=?");
+                int dd=rs.getInt(5);
+                ps1.setInt(1,dd);
                 rs1=ps1.executeQuery();
                 while(rs1.next()){
                     col.add(rs1.getString(2));
                 }
                 //医生姓名
-                ps2=ct.prepareStatement("select * from doctor where doctor_id=rs.getInt(4)");
+                ps2=ct.prepareStatement("select * from doctor where doctor_id=?");
+                int dodo =rs.getInt(4);
+                ps2.setInt(1,dodo);
                 rs2=ps2.executeQuery();
                 while(rs2.next()){
                     col.add(rs2.getString(2));
@@ -107,13 +126,17 @@ public class RecordTable extends AbstractTableModel{
     }
 
     //通过传递的sql语句来获得数据模型
-    public RecordTable(String sql){
-        this.init(sql);
+    public RecordTable(String pid_){
+        this.init(pid_,Boolean.FALSE);
     }
     //做一个构造函数，用于初始化数据模型
     public RecordTable(){
-        this.init("");
+        this.init("",Boolean.FALSE);
     }
+    public RecordTable(String pid_,Boolean pay_){
+        this.init(pid_,pay_);
+    }
+
     @Override
     //得到共有多少行
     public int getRowCount() {

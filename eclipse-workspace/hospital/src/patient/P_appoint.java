@@ -56,8 +56,43 @@ public class P_appoint extends JFrame implements ActionListener, ItemListener{
     String sql_insert;
 
 
-
-    public void update_box(JComboBox jbox1, JComboBox jbox2, String sql_, String s1, String s2) {
+    /*select * from dept*/
+    public void update_box12(JComboBox jbox1, JComboBox jbox2, String doc, String s1, String s2) {
+        jbox2.removeAllItems();
+        jbox1.removeAllItems();
+        try {
+            //1、加载驱动(把下需要的驱动程序加入内存中)
+            Class.forName(driver);
+            //2、得到连接(指定连接到哪个数据源)
+            ct = DriverManager.getConnection(url, user, password);
+            //3、创建ps
+            if(doc.equals("")) {
+                ps1 = ct.prepareStatement("select * from department");
+            }
+            else {
+                int docid=Integer.parseInt(doc);
+                ps1 = ct.prepareStatement("select * from department");
+            }
+            //预编译语句对象
+            rs1 = ps1.executeQuery();//返回查询结果
+            //如果有查询结果
+            while (rs1.next()) {
+                jbox1.addItem(rs1.getString(s1));
+                jbox2.addItem(rs1.getString(s2));
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally{
+            //关闭资源（关闭顺序：谁后创建则先关闭)
+            try{
+                if(rs1!=null) rs.close();
+                if(ps1!=null) ps.close();
+                if(ct!=null) ct.close();
+            }catch(Exception e){}
+        }
+    }
+    //select * from doctor
+    public void update_box34(JComboBox jbox1, JComboBox jbox2, String dept, String s1, String s2) {
         jbox2.removeAllItems();
         jbox1.removeAllItems();
         try {
@@ -67,7 +102,14 @@ public class P_appoint extends JFrame implements ActionListener, ItemListener{
             ct = DriverManager.getConnection(url, user, password);
             //3、创建ps
 
-            ps1 = ct.prepareStatement(sql_);
+            if(doc.equals("")) {
+                ps1 = ct.prepareStatement("select * from doctor");
+            }
+            else {
+                int did=Integer.parseInt(dept);
+                ps1 = ct.prepareStatement("select * from doctor where department_id=?");
+                ps1.setInt(1,did);
+            }
             //预编译语句对象
             rs1 = ps1.executeQuery();//返回查询结果
             //如果有查询结果
@@ -87,16 +129,26 @@ public class P_appoint extends JFrame implements ActionListener, ItemListener{
         }
     }
 
-    public void update_date(JComboBox box, int docid,String date1){
+    public void update_date(JComboBox box, int docid,String date22){
         try {
             //1、加载驱动(把下需要的驱动程序加入内存中)
             Class.forName(driver);
             //2、得到连接(指定连接到哪个数据源)
             ct = DriverManager.getConnection(url, user, password);
             //3、创建ps
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            java.util.Date d = null;
+            try {
+                d = format.parse(date22);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Date date_re = new java.sql.Date(d.getTime());
 
-            ps = ct.prepareStatement("select * from appointment/* where doctor_id=docid and (String)date=date1*/");
+            ps = ct.prepareStatement("select * from appointment where doctor_id=? and date=?");
             //预编译语句对象
+            ps.setInt(1,docid);
+            ps.setDate(2,date_re);
             rs = ps.executeQuery();//返回查询结果
             //如果有查询结果
             int cnt = 0;
@@ -128,7 +180,7 @@ public class P_appoint extends JFrame implements ActionListener, ItemListener{
         box2=new JComboBox();
         box1.addItemListener(this);
         box2.addItemListener(this);
-        update_box(box1,box2,"select * from department","department_id","department_name");
+        update_box12(box1,box2,"select * from department","department_id","department_name");
         box1.setSelectedIndex(-1);
         box2.setSelectedIndex(-1);
 
@@ -138,7 +190,7 @@ public class P_appoint extends JFrame implements ActionListener, ItemListener{
         box4=new JComboBox();
         box3.addItemListener(this);
         box4.addItemListener(this);
-        update_box(box3,box4,"select * from doctor","doctor_id","doctor_name");
+        update_box34(box3,box4,"","doctor_id","doctor_name");
         box3.setSelectedIndex(-1);
         box4.setSelectedIndex(-1);
 
@@ -279,9 +331,8 @@ public class P_appoint extends JFrame implements ActionListener, ItemListener{
     {
         if(ie.getSource()==box1){
             box2.setSelectedIndex(box1.getSelectedIndex());
-            deptID=(int)box1.getSelectedItem();
-            String sql1="select * from doctor where department_id=deptID";
-            update_box(box3,box4,sql1,"doctor_id","doctor_name");
+            String dID=(String)box1.getSelectedItem();
+            update_box34(box3,box4,dID,"doctor_id","doctor_name");
 
             //然后是判断这两天的日期是不是约满了，从所有的预约表中查询
             //首先连接数据库，根据医生id查找date1和date2和date3的所有预约表并计数，如果当前计数大于20，则将该日期从表中删除
@@ -292,9 +343,8 @@ public class P_appoint extends JFrame implements ActionListener, ItemListener{
         }
         else if(ie.getSource()==box2){
             box1.setSelectedIndex(box2.getSelectedIndex());
-            deptID=(int)box1.getSelectedItem();
-            String sql1="select * from doctor where department_id=deptID";
-            update_box(box3,box4,sql1,"doctor_id","doctor_name");
+            String dID=(String)box1.getSelectedItem();
+            update_box34(box3,box4,dID,"doctor_id","doctor_name");
 
             //然后是判断这两天的日期是不是约满了，从所有的预约表中查询
             //首先连接数据库，根据医生id查找date1和date2和date3的所有预约表并计数，如果当前计数大于20，则将该日期从表中删除

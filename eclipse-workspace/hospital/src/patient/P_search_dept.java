@@ -69,9 +69,8 @@ public class P_search_dept extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==jb1) {
             String query = this.jtf.getText().trim();
-            String sql = "select * from department where department_name = '"+query+"";
             DeptTable new_table;
-            new_table = new DeptTable(sql);
+            new_table = new DeptTable(query);
             jt.setModel(new_table);
         }
         else if(e.getSource()==jb2){
@@ -86,7 +85,7 @@ public class P_search_dept extends JFrame implements ActionListener{
                 deptID=(int)this.jt.getValueAt(row_number, 0);
             }
             DoctorTable new_table;
-            new_table = new DoctorTable("select * from doctor where department_id=deptID");
+            new_table = new DoctorTable(deptID);
             jt.setModel(new_table);
 
         }

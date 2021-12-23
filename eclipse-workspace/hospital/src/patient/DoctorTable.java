@@ -30,10 +30,8 @@ public class DoctorTable extends AbstractTableModel{
     String password="A20001112a";
 
 
-    public void init(String sql){
-        if(sql.equals("")){//初始化表格
-            sql="select * from doctor";
-        }
+    public void init(String docname, int deptid){
+
         columnNames = new Vector();
         //设置列名
         columnNames.add("编号");
@@ -50,7 +48,19 @@ public class DoctorTable extends AbstractTableModel{
             //2、得到连接(指定连接到哪个数据源)
             ct = DriverManager.getConnection(url,user,password);
             //3、创建ps
-            ps=ct.prepareStatement(sql);
+            //默认-1，显示所有科室的医生
+            if(deptid !=-1) {
+                ps=ct.prepareStatement("select * from doctor where department_id=?");
+                ps.setInt(1,deptid);
+            }
+            else if(docname.equals("")) {
+                ps=ct.prepareStatement("select * from doctor");
+            }
+            else{
+                ps=ct.prepareStatement("select * from doctor where doctor_name=?");
+                ps.setString(1,docname);
+            }
+
             //4、执行(如果是增加，删除，修改使用executeUpdate();查询executeQuery)
             rs=ps.executeQuery();
 
@@ -58,7 +68,9 @@ public class DoctorTable extends AbstractTableModel{
                 Vector col = new Vector();
                 col.add(rs.getString(1));
                 col.add(rs.getString(4));
-                ps1=ct.prepareStatement("select * from department where department_id=rs.getInt(2)");
+                ps1=ct.prepareStatement("select * from department where department_id=?");
+                int dede=rs.getInt(2);
+                ps1.setInt(1,dede);
                 rs1=ps1.executeQuery();
                 while(rs1.next()){
                     col.add(rs1.getString(2));
@@ -85,13 +97,20 @@ public class DoctorTable extends AbstractTableModel{
     }
 
     //通过传递的sql语句来获得数据模型
-    public DoctorTable(String sql){
-        this.init(sql);
+    public DoctorTable(String name, int number){
+        this.init(name, number);
     }
     //做一个构造函数，用于初始化数据模型
-    public DoctorTable(){
-        this.init("");
+    public DoctorTable(int number){
+        this.init("",number);
     }
+    public DoctorTable(String name){
+        this.init(name,-1);
+    }
+    public DoctorTable(){
+        this.init("",-1);
+    }
+
     @Override
     //得到共有多少行
     public int getRowCount() {

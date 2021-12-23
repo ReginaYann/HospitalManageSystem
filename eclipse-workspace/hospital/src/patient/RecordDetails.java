@@ -75,7 +75,8 @@ public class RecordDetails extends JFrame implements ActionListener {
             //2、得到连接(指定连接到哪个数据源)
             ct = DriverManager.getConnection(url,user,password);
             //3、创建ps
-            ps=ct.prepareStatement("select * from medical_record  where record_id=recordID");
+            ps=ct.prepareStatement("select * from medical_record  where record_id=?");
+            ps.setInt(1,recordID);
             //预编译语句对象
             rs=ps.executeQuery();//返回查询结果
             //如果有查询结果
@@ -106,7 +107,9 @@ public class RecordDetails extends JFrame implements ActionListener {
                 jtf10.setEditable(false);
 
                 //科室名称
-                ps1=ct.prepareStatement("select * from department  where department_id=(int)rs.getString(5)");
+                ps1=ct.prepareStatement("select * from department  where department_id=?");
+                int ddid=Integer.parseInt(rs.getString(5));
+                ps1.setInt(1,ddid);
                 //预编译语句对象
                 rs1=ps1.executeQuery();//返回查询结果
                 while(rs1.next()){
@@ -115,7 +118,9 @@ public class RecordDetails extends JFrame implements ActionListener {
                 }
 
                 //医生姓名
-                ps2=ct.prepareStatement("select * from department  where department_id=rs.getInt(4)");
+                ps2=ct.prepareStatement("select * from department  where department_id=?");
+                int dddd=rs.getInt(4);
+                ps2.setInt(1,dddd);
                 //预编译语句对象
                 rs2=ps2.executeQuery();//返回查询结果
                 while(rs2.next()){
@@ -123,8 +128,10 @@ public class RecordDetails extends JFrame implements ActionListener {
                 }
 
                 //患者信息
-                ps3=ct.prepareStatement("select * from patient  where patient_id=rs.getInt(3)");
+                ps3=ct.prepareStatement("select * from patient  where patient_id=?");
                 //预编译语句对象
+                int ppid=rs.getInt(3);
+                ps3.setInt(1,ppid);
                 rs3=ps3.executeQuery();//返回查询结果
                 while(rs3.next()){
                     jtf3_1.setText(rs3.getString(2));

@@ -32,10 +32,7 @@ public class AppointTable extends AbstractTableModel{
     String password="A20001112a";
 
 
-    public void init(String sql){
-        if(sql.equals("")){//初始化表格
-            sql="select * from appointment";
-        }
+    public void init(String pid_){
         columnNames = new Vector();
         //设置列名
         columnNames.add("预约编号");
@@ -51,7 +48,14 @@ public class AppointTable extends AbstractTableModel{
             //2、得到连接(指定连接到哪个数据源)
             ct = DriverManager.getConnection(url,user,password);
             //3、创建ps
-            ps=ct.prepareStatement(sql);
+            if(pid_.equals("")) {
+                ps=ct.prepareStatement("select * from appointment");
+            }
+            else {
+                ps=ct.prepareStatement("select * from appointment where patient_id=?");
+                int pid=Integer.parseInt(pid_);
+                ps.setInt(1,pid);
+            }
             //4、执行(如果是增加，删除，修改使用executeUpdate();查询executeQuery)
             rs = ps.executeQuery();
 
@@ -60,13 +64,17 @@ public class AppointTable extends AbstractTableModel{
                 col.add(rs.getInt(1));
                 col.add(rs.getDate(5));
                 //科室名称
-                ps1=ct.prepareStatement("select * from department where department_id=rs.getInt(4)");
+                ps1=ct.prepareStatement("select * from department where department_id=?");
+                int deptID=rs.getInt(4);
+                ps1.setInt(1,deptID);
                 rs1=ps1.executeQuery();
                 while(rs1.next()){
                     col.add(rs1.getString(2));
                 }
                 //医生姓名
-                ps2=ct.prepareStatement("select * from doctor where doctor_id=rs.getInt(3)");
+                ps2=ct.prepareStatement("select * from doctor where doctor_id=?");
+                int doctorID=rs.getInt(3);
+                ps2.setInt(1,doctorID);
                 rs2=ps2.executeQuery();
                 while(rs2.next()){
                     col.add(rs2.getString(2));
@@ -94,8 +102,8 @@ public class AppointTable extends AbstractTableModel{
     }
 
     //通过传递的sql语句来获得数据模型
-    public AppointTable(String sql){
-        this.init(sql);
+    public AppointTable(String pid_){
+        this.init(pid_);
     }
     //做一个构造函数，用于初始化数据模型
     public AppointTable(){
