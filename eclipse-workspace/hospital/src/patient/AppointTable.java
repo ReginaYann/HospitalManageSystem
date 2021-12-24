@@ -77,7 +77,7 @@ public class AppointTable extends AbstractTableModel{
                 ps2.setInt(1,doctorID);
                 rs2=ps2.executeQuery();
                 while(rs2.next()){
-                    col.add(rs2.getString(2));
+                    col.add(rs2.getString(4));
                 }
 
                 //加入到rowData

@@ -73,7 +73,7 @@ public class DeptTable extends AbstractTableModel{
                     col.add(rs_doctor.getString(4));
                 }
 
-                //对医生数量计数
+                //对医生数量计数/
                 ps_doctor=ct.prepareStatement("select * from doctor  where department_id=?");
                 //预编译语句对象
                 int dede=rs_dept.getInt(1);
@@ -112,6 +112,8 @@ public class DeptTable extends AbstractTableModel{
     public DeptTable(){
         this.init("");
     }
+
+    public static void main(String[] args) {new DeptTable("");}
     @Override
     //得到共有多少行
     public int getRowCount() {

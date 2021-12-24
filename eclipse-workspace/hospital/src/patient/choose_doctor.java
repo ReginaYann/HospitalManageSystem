@@ -29,7 +29,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 
-public class P_appoint extends JFrame implements ActionListener{
+public class choose_doctor extends JFrame implements ActionListener{
     //基本组件
     JPanel jp1, jp2;
     JLabel jl1;
@@ -40,10 +40,11 @@ public class P_appoint extends JFrame implements ActionListener{
 
     public static int row_number;
     String pid;
-    String dept;
+    String deptid;
     int deptID;
     String doc;
     int docID;
+    String date1,date2,date3;
 
     //连接数据库要用的东西
     Connection ct=null;
@@ -61,17 +62,18 @@ public class P_appoint extends JFrame implements ActionListener{
 
 
 
-    public P_appoint(String pid_) {
+    public choose_doctor(String pid_, String deptid_) {
         pid=pid_;
+        deptid=deptid_;
 
         jp1=new JPanel();
-        jl1=new JLabel("选择科室");
+        jl1=new JLabel("选择医生");
         jb1=new JButton("确认");
         jb1.addActionListener(this);
         jp1.add(jl1);
         jp1.add(jb1);
 
-        DeptTable table_init = new DeptTable();
+        DoctorTable table_init = new DoctorTable(Integer.parseInt(deptid_));
         jt = new JTable(table_init);
         jsp = new JScrollPane(jt);
 
@@ -80,31 +82,27 @@ public class P_appoint extends JFrame implements ActionListener{
 
         this.setSize(500,700);
         this.setLocationRelativeTo(null);// 居中
-        this.setTitle("普通预约-选择科室");
+        this.setTitle("普通预约-选择医生");
         this.setVisible(true);
     }
-
-    public static void main(String[] args) {new P_appoint("1");}
-
 
 
     @Override
 
     public void actionPerformed(ActionEvent e) {
+        //确认预约，插入预约表
         if (e.getSource() == jb1) {
             row_number=this.jt.getSelectedRow();
             if(row_number==-1){
                 //提示
-                JOptionPane.showMessageDialog(this, "请选择科室");
+                JOptionPane.showMessageDialog(this, "请选择医生");
                 return ;//谁调用就返回到哪
             }
             else {
-                String deptid=this.jt.getValueAt(row_number, 0).toString();
-                new choose_doctor(pid, deptid);
+                String docid=this.jt.getValueAt(row_number, 0).toString();
+                new choose_time(pid, deptid,docid);
                 this.dispose();
             }
-
         }
     }
-
 }

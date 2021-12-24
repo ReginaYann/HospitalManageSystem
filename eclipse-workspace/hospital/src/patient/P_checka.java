@@ -34,7 +34,7 @@ public class P_checka extends JFrame implements ActionListener{
     String pid;   //哪个病人要看预约记录
     String sql=null;
     public static void main(String[] args){
-        new P_checka("2");
+        new P_checka("1");
     }
     public static int row_number;
 

@@ -44,6 +44,7 @@ public class P_search_dept extends JFrame implements ActionListener{
         jb1=new JButton("查询");
         jb1.addActionListener(this);
         jb2=new JButton("显示医生列表");
+        jb2.addActionListener(this);
 
         //查询窗口
         jp1.add(jl1);
@@ -82,11 +83,12 @@ public class P_search_dept extends JFrame implements ActionListener{
                 return ;//谁调用就返回到哪
             }
             else {
-                deptID=(int)this.jt.getValueAt(row_number, 0);
+                String deptid = this.jt.getValueAt(row_number, 0).toString();
+                deptID=Integer.parseInt(deptid);
+                DoctorTable new_table;
+                new_table = new DoctorTable(deptID);
+                jt.setModel(new_table);
             }
-            DoctorTable new_table;
-            new_table = new DoctorTable(deptID);
-            jt.setModel(new_table);
 
         }
     }

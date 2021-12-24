@@ -105,6 +105,8 @@ public class RecordDetails extends JFrame implements ActionListener {
                 jtf9.setEditable(false);
                 jtf10.setText(rs.getString(12));
                 jtf10.setEditable(false);
+                jtf11_0.setText(rs.getString(4));
+                jtf11_0.setEditable(false);
 
                 //科室名称
                 ps1=ct.prepareStatement("select * from department  where department_id=?");
@@ -118,13 +120,14 @@ public class RecordDetails extends JFrame implements ActionListener {
                 }
 
                 //医生姓名
-                ps2=ct.prepareStatement("select * from department  where department_id=?");
+                ps2=ct.prepareStatement("select * from doctor  where doctor_id=?");
                 int dddd=rs.getInt(4);
                 ps2.setInt(1,dddd);
                 //预编译语句对象
                 rs2=ps2.executeQuery();//返回查询结果
-                while(rs2.next()){
+                if(rs2.next()){
                     jtf11_1.setText(rs2.getString(4));
+                    jtf11_1.setEditable(false);
                 }
 
                 //患者信息

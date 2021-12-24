@@ -35,7 +35,7 @@ public class P_history extends JFrame implements ActionListener{
     int pid;   //哪个病人要看病历记录
     String sql=null;
     public static void main(String[] args){
-        new P_history("2");
+        new P_history("1");
     }
     public static int row_number;
 

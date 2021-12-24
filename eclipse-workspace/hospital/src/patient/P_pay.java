@@ -86,7 +86,7 @@ public class P_pay extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "请选择您要缴费的记录！", "提示信息", JOptionPane.ERROR_MESSAGE);
                 return;
             } else {
-                String payment_ = (String) table_init.getValueAt(row_num, 4);
+                String payment_ = table_init.getValueAt(row_num, 4).toString();
                 new payment_choice(Integer.toString(pid), payment_);
                 int ispay = (int) table_init.getValueAt(row_num, 0);
 

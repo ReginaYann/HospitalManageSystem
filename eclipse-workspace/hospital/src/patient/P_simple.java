@@ -53,35 +53,6 @@ public class P_simple extends JFrame implements ActionListener,ItemListener
     String password="A20001112a";
 
 
-    public void update_box(JComboBox jbox1, JComboBox jbox2, String sql_, String s1, String s2) {
-        jbox1.removeAllItems();
-        jbox2.removeAllItems();
-        try {
-            //1、加载驱动(把下需要的驱动程序加入内存中)
-            Class.forName(driver);
-            //2、得到连接(指定连接到哪个数据源)
-            ct = DriverManager.getConnection(url, user, password);
-            //3、创建ps
-            ps1 = ct.prepareStatement(sql_);
-            //预编译语句对象
-            rs1 = ps1.executeQuery();//返回查询结果
-            //如果有查询结果
-            while (rs1.next()) {
-                jbox1.addItem(rs1.getString(s1));
-                jbox2.addItem(rs1.getString(s2));
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }finally{
-            //关闭资源（关闭顺序：谁后创建则先关闭)
-            try{
-                if(rs1!=null) rs.close();
-                if(ps1!=null) ps.close();
-                if(ct!=null) ct.close();
-            }catch(Exception e){}
-        }
-    }
-
     public P_simple(String pid_) {
         pid=pid_;
         jl1=new JLabel("14天内是否去过高风险地区：");
@@ -113,9 +84,30 @@ public class P_simple extends JFrame implements ActionListener,ItemListener
         jl4=new JLabel("选择医生：");
         box3=new JComboBox();
         box4=new JComboBox();
-        box3.addItemListener(this);
-        box4.addItemListener(this);
-        update_box(box3, box4, "select * from doctor where department_id=1", "doctor_id","doctor_name");
+        try {
+            //1、加载驱动(把下需要的驱动程序加入内存中)
+            Class.forName(driver);
+            //2、得到连接(指定连接到哪个数据源)
+            ct = DriverManager.getConnection(url, user, password);
+            //3、创建ps
+            ps1 = ct.prepareStatement("select * from doctor where department_id=1");
+            //预编译语句对象
+            rs1 = ps1.executeQuery();//返回查询结果
+            //如果有查询结果
+            while (rs1.next()) {
+                box3.addItem(rs1.getString(1));
+                box4.addItem(rs1.getString(4));
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally{
+            //关闭资源（关闭顺序：谁后创建则先关闭)
+            try{
+                if(rs1!=null) rs.close();
+                if(ps1!=null) ps.close();
+                if(ct!=null) ct.close();
+            }catch(Exception e){}
+        }
         box3.setSelectedIndex(-1);
         box4.setSelectedIndex(-1);
         box3.addItemListener(this);
@@ -128,6 +120,7 @@ public class P_simple extends JFrame implements ActionListener,ItemListener
 
         jp5=new JPanel();
         jb1=new JButton("确认");
+        jb1.addActionListener(this);
         jp5.add(jb1);
 
         this.setLayout(new GridLayout(6,1));
@@ -143,7 +136,7 @@ public class P_simple extends JFrame implements ActionListener,ItemListener
 
     }
 
-    public static void main(String[] args) {new P_simple("h");}
+    public static void main(String[] args) {new P_simple("1");}
 
     @Override
 
@@ -162,7 +155,8 @@ public class P_simple extends JFrame implements ActionListener,ItemListener
                 {
                     ever=1;
                 }
-                int doctorID=(int)box3.getSelectedItem();
+                String dx=box3.getSelectedItem().toString();
+                int doctorID=Integer.parseInt(dx);
 
 
                 try {
@@ -171,15 +165,15 @@ public class P_simple extends JFrame implements ActionListener,ItemListener
                     //2、得到连接(指定连接到哪个数据源)
                     ct = DriverManager.getConnection(url, user, password);
                     //3、创建ps
-                    ps = ct.prepareStatement("insert into fever_patient values (?,?,?,?,?,?,?)");
+                    ps = ct.prepareStatement("insert into fever_patient(patient_id, fever_temperature,ever_went_to_high_risk_area,is_diagnosed,doctor_id,department_id,referral_doctor_id) values (?,?,?,?,?,?,?)");
                     //预编译语句对象
                     ps.setInt(1,patientID);
                     ps.setString(2,tem);
                     ps.setInt(3,ever);
                     ps.setInt(4,0);
                     ps.setInt(5,doctorID);
-                    ps.setInt(6,-1);  //需要医生填写
-                    ps.setInt(7,-1);  //需要医生填写
+                    ps.setInt(6,1);  //需要医生填写
+                    ps.setInt(7,6);  //需要医生填写
                     ps.executeUpdate();
 
                 } catch (Exception x) {
@@ -192,9 +186,10 @@ public class P_simple extends JFrame implements ActionListener,ItemListener
                     } catch (Exception d) {
                     }
                 }
-
+                JOptionPane.showMessageDialog((Component) null, "预约成功", "提示信息", JOptionPane.ERROR_MESSAGE);
+                this.dispose();
             }
-            this.dispose();
+
         }
     }
 
