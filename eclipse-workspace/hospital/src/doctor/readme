@@ -1,0 +1,10 @@
+Doctor_inf：对应医生信息详情界面
+Doctor_update：对应医生更新自己的个人信息界面
+DAppointmentList：对应普通医生的今日预约列表
+D_PatientList：对应普通医生的查看历史病人（其实是通过预约信息查看）列表，可以从这个界面转到查看病历详情，随后又可以跳到查看处方详情
+Write_record：对应普通医生为病人填写病历
+Wirte_prescription：对应普通医生为病人开处方界面
+
+DAppList_fever：对应发热科医生的今日预约列表
+fever_diagnosis：对应发热科医生为病人诊断是否确诊新冠
+DAppList_fever：发热科医生查看历史病人列表
