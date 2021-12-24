@@ -66,7 +66,7 @@ public class RecordTable extends AbstractTableModel{
                     ps=ct.prepareStatement("select * from medical_record where patient_id=? and is_paid=0");
                     int pp=Integer.parseInt(pid_);
                     ps.setInt(1,pp);}
-                if(pay){
+                if(!pay){
                     ps=ct.prepareStatement("select * from medical_record where patient_id=?");
                     int pp=Integer.parseInt(pid_);
                     ps.setInt(1,pp);}
